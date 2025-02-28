@@ -62,8 +62,6 @@ then
     exit 1
 fi
 
-snowflake_user=MARCIN_MOLAK
-
 echo "Creating new files from template: "
 echo -ne "- Bielik_Service/bielik.yaml: "
 execute_with_status "cp ./Bielik_Service/bielik.yaml.org ./Bielik_Service/bielik.yaml"
