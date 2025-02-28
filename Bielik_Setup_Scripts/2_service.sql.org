@@ -1,0 +1,26 @@
+USE ROLE <SnowflakeDatabase>_ADMIN;
+USE DATABASE <SnowflakeDatabase>;
+
+USE SCHEMA VLLM;
+
+PUT file://<ScriptPath>/Bielik_Service/bielik.yaml @specs AUTO_COMPRESS = FALSE OVERWRITE = TRUE;
+
+DROP SERVICE IF EXISTS BIELIK;
+
+CREATE SERVICE BIELIK
+    IN COMPUTE POOL <SnowflakeDatabase>_GPU_NV_M
+    FROM @specs
+    SPEC='bielik.yaml'
+    EXTERNAL_ACCESS_INTEGRATIONS = (HF_INTEGRATION);
+
+CREATE FUNCTION IF NOT EXISTS bielik_complete(user_prompt varchar)
+   RETURNS VARCHAR
+   SERVICE='BIELIK'
+   ENDPOINT='bielik-frontend'
+   AS '/bielik_complete_varchar';
+
+CREATE FUNCTION IF NOT EXISTS bielik_complete(prompt array, options object)
+   RETURNS OBJECT
+   SERVICE='BIELIK'
+   ENDPOINT='bielik-frontend'
+   AS '/bielik_complete_array';

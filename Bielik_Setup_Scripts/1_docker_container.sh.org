@@ -1,0 +1,7 @@
+docker build -t bielik-vllm ./Bielik_Vllm  --platform linux/amd64 
+docker build -t bielik-frontend ./Bielik_Frontend --platform linux/amd64 
+docker tag bielik-vllm <SnowflakeAccountIdentifier>.registry.snowflakecomputing.com/<SnowflakeDatabaseLowerCase>/vllm/images/bielik-vllm:latest
+docker tag bielik-frontend <SnowflakeAccountIdentifier>.registry.snowflakecomputing.com/<SnowflakeDatabaseLowerCase>/vllm/images/bielik-frontend:latest
+snow spcs image-registry token --connection <SnowConnectionName> --format json | docker login <SnowflakeAccountIdentifier>.registry.snowflakecomputing.com/<SnowflakeDatabaseLowerCase>/vllm/images -u 0sessiontoken --password-stdin
+docker push <SnowflakeAccountIdentifier>.registry.snowflakecomputing.com/<SnowflakeDatabaseLowerCase>/vllm/images/bielik-vllm:latest
+docker push <SnowflakeAccountIdentifier>.registry.snowflakecomputing.com/<SnowflakeDatabaseLowerCase>/vllm/images/bielik-frontend:latest

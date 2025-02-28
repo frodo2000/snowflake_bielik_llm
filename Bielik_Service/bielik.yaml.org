@@ -1,0 +1,41 @@
+spec:
+  containers:
+    - name: bielik-vllm
+      image: <SnowflakeAccountIdentifier>.registry.snowflakecomputing.com/<SnowflakeDatabaseLowerCase>/vllm/images/bielik-vllm:latest
+      resources:
+        requests:
+          nvidia.com/gpu: 2
+        limits:
+          nvidia.com/gpu: 2
+      env:
+        MODEL: speakleash/Bielik-11B-v2.3-Instruct
+        MODEL_MAX_LEN: 4096
+        TENSOR_PARALLEL: 2
+        GPU_MEM_UTIL: 0.8
+        HF_TOKEN: <HFToken>
+      volumeMounts:
+        - name: models
+          mountPath: /models
+        - name: shm
+          mountPath: /dev/shm
+    - name: bielik-frontend
+      image: <SnowflakeAccountIdentifier>.registry.snowflakecomputing.com/<SnowflakeDatabaseLowerCase>/vllm/images/bielik-frontend:latest
+      env:
+        MODEL: speakleash/Bielik-11B-v2.3-Instruct
+        BIELIK_VLLM_API: http://localhost:8000/v1
+  endpoints:
+    - name: bielik-vllm
+      port: 8000
+      public: false
+    - name: bielik-frontend
+      port: 5000
+      public: false
+  volumes:
+    - name: models
+      source: "@<SnowflakeDatabase>.VLLM.models"
+    - name: shm
+      source: memory
+      size: 60G
+
+  networkPolicyConfig:
+    allowInternetEgress: true
